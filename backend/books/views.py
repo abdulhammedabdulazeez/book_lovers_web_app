@@ -10,7 +10,9 @@ from books.pagination import CustomPagination
 from .models import Book
 from .serializers import BookSerializer
 from .exceptions import InvalidGenreError  # Our custom exception
+# from django.views.decorators import cors_protect
 
+# @cors_protect
 @api_view(['GET'])
 def book_list(request):
     """
@@ -19,6 +21,9 @@ def book_list(request):
     - genre
     - is_hardcover
     """
+    
+    print("Received request headers:", request.headers)
+    print("Received query params:", request.GET)
     try:
         # Get filter parameters from query string
         search_query = request.query_params.get('search', '')
