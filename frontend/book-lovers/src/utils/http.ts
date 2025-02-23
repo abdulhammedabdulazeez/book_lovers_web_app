@@ -38,13 +38,18 @@ interface PaginatedResponse<T> {
     signal: AbortSignal;
     debouncedFilters: string[];
     }): Promise<Book[]> {
-    const params = new URLSearchParams();
-    debouncedFilters.forEach((filter: string) => {
-        params.append("category", filter);
+    const params = new URLSearchParams({
+        page_size: '20'
     });
+    
+    if (debouncedFilters.length > 0) {
+        debouncedFilters.forEach((filter: string) => {
+            params.append("genre", filter);
+        });
+    }
 
     const response = await fetch(
-        `http://127.0.0.1:8000/api/books?page_size=20`,
+        `http://127.0.0.1:8000/api/books?${params.toString()}`,
         {
             method: 'GET',
             headers: {

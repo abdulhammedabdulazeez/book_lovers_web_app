@@ -5,13 +5,13 @@ export interface FilterOption {
 }
 
 export const FILTEROPTIONS: FilterOption[] = [
-  { id: "fiction", label: "Fiction", value: "fiction" },
-  { id: "non-fiction", label: "Non-Fiction", value: "non-fiction" },
-  { id: "science", label: "Science", value: "science" },
-  { id: "history", label: "History", value: "history" },
-  { id: "mystery", label: "Mystery", value: "mystery" },
-  { id: "romance", label: "Romance", value: "romance" },
-  { id: "horror", label: "Horror", value: "horror" },
-  { id: "fantasy", label: "Fantasy", value: "fantasy" },
-  { id: "biography", label: "Biography", value: "biography" },
+  { id: "fiction", label: "Fiction", value: "Fiction" },
+  { id: "non-fiction", label: "Non-Fiction", value: "Non-Fiction" },
+  { id: "science", label: "Science", value: "Science" },
+  { id: "history", label: "History", value: "History" },
+  { id: "mystery", label: "Mystery", value: "Mystery" },
+  { id: "romance", label: "Romance", value: "Romance" },
+  { id: "horror", label: "Horror", value: "Horror" },
+  { id: "fantasy", label: "Fantasy", value: "Fantasy" },
+  { id: "biography", label: "Biography", value: "Biography" },
 ];
