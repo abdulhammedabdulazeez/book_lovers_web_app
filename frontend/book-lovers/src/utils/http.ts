@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { APIError } from "./error";
 
 export const queryClient = new QueryClient();
 
@@ -19,33 +20,45 @@ export interface Book {
     isbn: string;
 }
 
-interface PaginatedResponse<T> {
-    links: {
-        next: string | null;
-        previous: string | null;
+interface BooksResponse {
+    books: Book[];
+    pagination: {
+        currentPage: number;
+        totalPages: number;
+        totalItems: number;
+        pageSize: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
     };
-    total_pages: number;
-    total_items: number;
-    current_page: number;
-    page_size: number;
-    results: T[];
-    }
-
-    export async function fetchBooks({
-    signal,
-    debouncedFilters,
-    }: {
+}
+    
+interface FetchBooksParams {
     signal: AbortSignal;
     debouncedFilters: string[];
-    }): Promise<Book[]> {
+    pageSize?: number;
+    page?: number;
+    search?: string;
+}
+
+export async function fetchBooks({
+    signal,
+    debouncedFilters,
+    pageSize = 20,
+    page = 1,
+    search,
+}: FetchBooksParams): Promise<BooksResponse> {
     const params = new URLSearchParams({
-        page_size: '20'
+        page_size: pageSize.toString(),
+        page: page.toString(),
     });
-    
-    if (debouncedFilters.length > 0) {
-        debouncedFilters.forEach((filter: string) => {
-            params.append("genre", filter);
-        });
+
+    // Add filters
+    debouncedFilters.forEach((filter: string) => {
+        params.append("genre", filter);
+    });
+
+    if (search) {
+        params.append("search", search);
     }
 
     const response = await fetch(
@@ -54,14 +67,36 @@ interface PaginatedResponse<T> {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                // Add any authentication headers if needed
             },
-            credentials: 'include', // if you're using sessions/cookies
+            credentials: 'include',
             signal,
-        });
+        }
+    );
+
+        const data = await response.json();
+
+    // Error handling remains the same
     if (!response.ok) {
-        throw new Error("Network response was not ok");
+        if (data.error) {
+            throw new APIError(
+                data.error.message,
+                data.error.code,
+                response.status
+            );
+        }
+        throw new Error('An unexpected error occurred');
     }
-    const data: PaginatedResponse<Book> = await response.json();
-    return data.results;
+
+    // Now we return both the books and pagination information
+    return {
+        books: data.results,
+        pagination: {
+            currentPage: data.current_page,
+            totalPages: data.total_pages,
+            totalItems: data.total_items,
+            pageSize: data.page_size,
+            hasNextPage: data.links.next !== null,
+            hasPreviousPage: data.links.previous !== null
+        }
+    };
 }
