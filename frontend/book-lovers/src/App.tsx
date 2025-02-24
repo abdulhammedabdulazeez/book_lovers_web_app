@@ -14,10 +14,14 @@ function App() {
       element: <RootLayout />,
       children: [
         {
-          index:true,
+          index: true,
+          element: <BookList />,
+        },
+        {
+          path: "/book-detail/:bookId",
           element: <BookList />
-        }
-      ]
+        },
+      ],
     },
   ]);
 

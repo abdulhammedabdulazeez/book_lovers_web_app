@@ -100,3 +100,49 @@ export async function fetchBooks({
         }
     };
 }
+
+
+export async function fetchBookById(id: string): Promise<Book> {
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/books/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      }
+    );
+
+    const data = await response.json();
+
+    // Handle API error responses
+    if (!response.ok) {
+      if (data.error) {
+        throw new APIError(
+          data.error.message,
+          data.error.code,
+          response.status
+        );
+      }
+      throw new Error(`Failed to fetch book with ID ${id}`);
+    }
+
+    // Successfully fetched the book data
+    return data as Book;
+  } catch (error) {
+    if (error instanceof APIError) {
+      throw error;
+    }
+    
+    // Handle network errors or other unexpected issues
+    if (error instanceof Error) {
+      console.error(`Error fetching book ${id}:`, error.message);
+      throw new Error(`Could not load book details: ${error.message}`);
+    }
+    
+    // Fallback for unexpected error types
+    throw new Error('An unexpected error occurred while fetching the book');
+  }
+}
