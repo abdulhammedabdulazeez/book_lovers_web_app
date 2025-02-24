@@ -1,7 +1,8 @@
+import { useSearchParams } from 'react-router-dom';
 import { BookContext } from "@/store/books-context";
 import { Book, fetchBooks } from "@/utils/http";
 import { useQuery } from "@tanstack/react-query";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { ErrorDisplay } from "./ErroDisplay";
 import { SkeletonCard } from "./SkeletonCard";
@@ -9,19 +10,41 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 
 const BookList: React.FC = () => {
     const { selectedFilters } = useContext(BookContext);
+    const [searchParams, setSearchParams] = useSearchParams();
     const [debouncedFilters] = useDebounce(selectedFilters, 300);
-    const [page, setPage] = useState(1)
+
+    // Get URL parameters
+    const currentPage = parseInt(searchParams.get('page') || '1');
+    const currentSearch = searchParams.get('search') || undefined;
+    const urlFilters = searchParams.getAll('genre');
 
     const handlePageChange = (newPage: number) => {
-        setPage(newPage);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('page', newPage.toString());
+        setSearchParams(newParams);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        refetch();
     };
 
+    // Use query with all dependencies
     const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ["books", debouncedFilters],
-        queryFn: ({ signal }) => fetchBooks({ signal, debouncedFilters, page }),
+        // Include URL filters in the query key
+        queryKey: ['books', debouncedFilters, currentSearch, currentPage, urlFilters],
+        queryFn: ({ signal }) => fetchBooks({ 
+            signal, 
+            debouncedFilters: urlFilters.length > 0 ? urlFilters : debouncedFilters,
+            page: currentPage,
+            search: currentSearch 
+        }),
     });
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        if (currentPage !== 1) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('page', '1');
+            setSearchParams(newParams);
+        }
+    }, [debouncedFilters, currentSearch]);
 
     if (isLoading) {
         return (
@@ -86,21 +109,21 @@ const BookList: React.FC = () => {
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious 
-                                onClick={() => handlePageChange(page - 1)}
-                                className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                className={currentPage <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                             />
                         </PaginationItem>
                         
                         <PaginationItem>
                             <PaginationLink isActive className="px-6">
-                                {page} of {data.pagination.totalPages}
+                                {currentPage} of {data.pagination.totalPages}
                             </PaginationLink>
                         </PaginationItem>
 
                         <PaginationItem>
                             <PaginationNext 
-                                onClick={() => handlePageChange(page + 1)}
-                                className={page >= data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                className={currentPage >= data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                             />
                         </PaginationItem>
                     </PaginationContent>
