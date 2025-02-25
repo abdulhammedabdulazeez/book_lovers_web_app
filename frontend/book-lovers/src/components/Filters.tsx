@@ -28,12 +28,10 @@ const Filters: React.FC = () => {
     const newParams = new URLSearchParams(searchParams);
     
     if (checked) {
-      // Add to context
       handleAddFilter(value);
       // Add to URL
       newParams.append('genre', value);
     } else {
-      // Remove from context
       handleRemoveFilter(value);
       // Remove from URL - we need to rebuild the genre parameters
       const currentGenres = searchParams.getAll('genre').filter(genre => genre !== value);

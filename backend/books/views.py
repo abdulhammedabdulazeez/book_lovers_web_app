@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from books.pagination import CustomPagination
 from .models import Book
 from .serializers import BookSerializer
-from .exceptions import InvalidGenreError  # Our custom exception
+from .exceptions import InvalidGenreError 
 # from django.views.decorators import cors_protect
 
 # @cors_protect
@@ -30,10 +30,10 @@ def book_list(request):
         genres = request.query_params.getlist('genre')
         is_hardcover = request.query_params.get('is_hardcover', None)
         
-        # Start with all books
+        # Starting with all books
         queryset = Book.objects.all()
         
-        # Apply search filter if provided
+        # Applying search filter if provided
         if search_query:
             queryset = queryset.filter(
                 Q(title__icontains=search_query) |

@@ -75,7 +75,6 @@ export async function fetchBooks({
 
         const data = await response.json();
 
-    // Error handling remains the same
     if (!response.ok) {
         if (data.error) {
             throw new APIError(
@@ -87,7 +86,7 @@ export async function fetchBooks({
         throw new Error('An unexpected error occurred');
     }
 
-    // Now we return both the books and pagination information
+    // both the books and pagination information
     return {
         books: data.results,
         pagination: {

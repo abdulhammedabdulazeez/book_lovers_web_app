@@ -8,7 +8,7 @@ interface ErrorDisplayProps {
 }
 
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onRetry }) => {
-    // Check if it's our custom API error
+    // Check if it's the custom API error
     const isAPIError = error instanceof APIError;
 
     return (

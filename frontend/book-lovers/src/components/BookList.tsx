@@ -1,18 +1,18 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { BookContext } from "@/store/books-context";
-import { Book, fetchBooks } from "@/utils/http";
+import { fetchBooks } from "@/utils/http";
 import { useQuery } from "@tanstack/react-query";
 import React, { useContext, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import { ErrorDisplay } from "./ErroDisplay";
 import { SkeletonCard } from "./SkeletonCard";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
 } from "./ui/pagination";
 import BookCard from "./BookCard";
 
@@ -35,7 +35,6 @@ const BookList: React.FC = () => {
 
   // Use query with all dependencies
   const { data, isLoading, error, refetch } = useQuery({
-    // Include URL filters in the query key
     queryKey: [
       "books",
       debouncedFilters,
@@ -87,8 +86,7 @@ const BookList: React.FC = () => {
 
   return (
     <section className="container mx-auto px-4 py-8">
-      
-        <BookCard books={data.books} />
+      <BookCard books={data.books} />
 
       <div className="mt-8 flex justify-center">
         <Pagination>

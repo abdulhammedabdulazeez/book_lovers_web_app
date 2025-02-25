@@ -11,7 +11,6 @@ import {
 import { Loader2 } from "lucide-react";
 
 const BookDetail: React.FC = () => {
-  // Extract the bookId from URL parameters
   const { bookId } = useParams<{ bookId: string }>();
   const navigate = useNavigate();
 
